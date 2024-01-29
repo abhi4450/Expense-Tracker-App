@@ -4,6 +4,6 @@ const router = express.Router();
 
 const userController = require("../controllers/users");
 
-router.get("/users", userController.getUsers);
+router.get("/users", userController.getsignupForm);
 
 module.exports = router;
