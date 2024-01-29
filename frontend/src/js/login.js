@@ -1,11 +1,12 @@
-/************DOM FOR Login ****************/
+// JavaScript (login.js)
+const loginButton = document.querySelector("#login");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#pass");
-const loginButton = document.querySelector("#login");
+const newDiv = document.querySelector("#msg");
 
 loginButton.addEventListener("click", UserLoginHandler);
 
-function UserLoginHandler(event) {
+async function UserLoginHandler() {
   const email = emailInput.value;
   const password = passwordInput.value;
 
@@ -14,7 +15,27 @@ function UserLoginHandler(event) {
     password: password,
   };
 
-  checkForUserInBackend(loginUserData);
+  try {
+    const result = await checkForUserInBackend(loginUserData);
+
+    if (result.success) {
+      if (result.status === 200) {
+        alert(result.data.message);
+      } else {
+        console.warn("Unexpected status code:", result.status);
+      }
+    } else {
+      if (result.status === 401) {
+        newDiv.innerText = `${result.error}`;
+      } else if (result.status === 404) {
+        newDiv.innerText = `${result.error}`;
+      } else {
+        console.warn("Unexpected status code:", result.status);
+      }
+    }
+  } catch (err) {
+    console.error("Unexpected error:", err);
+  }
 }
 
 async function checkForUserInBackend(loginUserData) {
@@ -23,10 +44,13 @@ async function checkForUserInBackend(loginUserData) {
       "http://localhost:3000/api/user/login",
       loginUserData
     );
-    console.log(response.data);
-    // Handle success, e.g., redirect to a success page or update UI
+
+    return { success: true, data: response.data, status: response.status };
   } catch (error) {
-    console.log("Error:", error.response.data.message);
-    // Display the error message in your UI, e.g., using an alert
+    return {
+      success: false,
+      error: error.response.data.message,
+      status: error.response.status,
+    };
   }
 }
