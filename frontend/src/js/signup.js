@@ -6,6 +6,8 @@ const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#pass");
 const newDiv = document.querySelector("#msg");
 
+
+
 signupButton.addEventListener("click", userSignupHandler);
 
 async function userSignupHandler(event) {
@@ -24,6 +26,7 @@ async function userSignupHandler(event) {
     const result = await storeUserToBackend(userData);
     if (result.success) {
       if (result.status === 201) {
+        console.log("Newly created User :", result.data.user);
         alert(result.data.message);
       } else {
         console.warn("Unexpected status code:", result.status);
@@ -55,3 +58,4 @@ async function storeUserToBackend(userData) {
     };
   }
 }
+

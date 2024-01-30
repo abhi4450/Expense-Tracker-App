@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User Signup</title>
+    <title>Expense Details</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,66 +12,59 @@
     />
   </head>
   <body
-    class="min-vh-100 min-vw-100 d-flex align-items-center justify-content-center m-0 p-0 box-sizing-border-box"
+    class="min-vh-100 min-vw-100 d-column align-items-center justify-content-center m-0 p-0 box-sizing-border-box"
   >
-    <div class="container p-0 m-0 h-100">
-      <div class="col-auto col-md-8 m-auto rounded bg-body-tertiary shadow">
-        <div class="text-center">
-          <img
-            src="https://tse4.mm.bing.net/th?id=OIP.WyoNuJYyf5Vl96UaA2LfpwHaHx&pid=Api&P=0&h=180"
-            alt=""
-          />
-        </div>
+    <h1 class="display-5 text-center my-5">Expenses Details</h1>
+    <div class="container">
+      <div class="col-auto col-md-8 m-auto rounded shadow">
         <div class="card bg-body-tertiary p-4 border-0 border-top">
-          <div id="msg" class="lead text-danger my-2 text-center"></div>
-          <form action="#" id="my-form" class="p-2">
+          <form action="#" class="p-2">
             <div class="mb-2">
-              <label for="name" class="form-label">Name</label>
+              <label for="exp" class="form-label">Expense Amout</label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                placeholder="Enter your name"
+                id="exp"
+                name="expense_amount"
                 class="form-control"
                 required
               />
             </div>
             <div class="mb-2">
-              <label for="email" class="form-label">Email</label>
+              <label for="desc" class="form-label">Description:</label>
               <input
                 type="text"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
+                id="desc"
+                name="description"
                 class="form-control"
                 required
               />
             </div>
             <div class="mb-2">
-              <label for="pass" class="form-label">Password</label>
-              <input
-                type="password"
-                id="pass"
-                name="password"
-                placeholder="Enter your password"
-                class="form-control"
-                required
-              />
+              <label for="category">Choose a category:</label>
+              <select
+                id="category"
+                class="form-select"
+                name="category"
+                aria-label="Default select example"
+              >
+                <option selected>---choose one---</option>
+                <option value="fuel">fuel</option>
+                <option value="food">Food</option>
+                <option value="electricity">Electricity</option>
+                <option value="electricity">Movie</option>
+              </select>
             </div>
 
-            <div class="d-grid gap-2 mt-3">
-              <button type="button" id="signup" class="btn btn-success">
-                Sign Up
-              </button>
-              <button type="submit" class="btn btn-outline-primary">
-                Existing Users - Login
+            <div class="d-grid mt-3">
+              <button type="submit" id="addExp" class="btn btn-success">
+                Add Expense
               </button>
             </div>
           </form>
         </div>
       </div>
     </div>
-    <script src="../src/js/signup.js"></script>
+    <script src="../src/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
