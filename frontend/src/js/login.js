@@ -21,6 +21,7 @@ async function UserLoginHandler() {
     if (result.success) {
       if (result.status === 200) {
         alert(result.data.message);
+        window.location.href = "index.html";
       } else {
         console.warn("Unexpected status code:", result.status);
       }

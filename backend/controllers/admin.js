@@ -72,3 +72,15 @@ exports.postExpenseForm = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.deleteExpenseItem = async (req, res, next) => {
+  const expenseId = req.params.expenseId;
+  console.log("helloooooooo", expenseId);
+  try {
+    const expenseItem = await Expense.findByPk(expenseId);
+    await expenseItem.destroy();
+    res.status(204).json({ message: "Item deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
