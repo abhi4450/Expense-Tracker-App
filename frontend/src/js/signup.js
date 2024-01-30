@@ -4,6 +4,7 @@ const signupButton = document.getElementById("signup");
 const nameInput = document.querySelector("#name");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#pass");
+const newDiv = document.querySelector("#msg");
 
 signupButton.addEventListener("click", userSignupHandler);
 
@@ -19,8 +20,24 @@ async function userSignupHandler(event) {
     email: email,
     password: password,
   };
-
-  await storeUserToBackend(userData);
+  try {
+    const result = await storeUserToBackend(userData);
+    if (result.success) {
+      if (result.status === 201) {
+        alert(result.data.message);
+      } else {
+        console.warn("Unexpected status code:", result.status);
+      }
+    } else {
+      if (result.status === 400) {
+        newDiv.innerText = `${result.error}`;
+      } else {
+        console.warn("Unexpected status code:", result.status);
+      }
+    }
+  } catch (error) {
+    console.error("Unexpected error:", err);
+  }
 }
 
 async function storeUserToBackend(userData) {
@@ -29,12 +46,12 @@ async function storeUserToBackend(userData) {
       "http://localhost:3000/api/user/signup",
       userData
     );
-    console.log(response.data);
-    // Handle success, e.g., redirect to a success page or update UI
+    return { success: true, data: response.data, status: response.status };
   } catch (error) {
-    console.log("Error:", error.response.data.message);
-    // Display the error message in your UI, e.g., using an alert
-
-    emailInput.nextElementSibling.textContent = `${error.response.data.message}`;
+    return {
+      success: false,
+      error: error.response.data.message,
+      status: error.response.status,
+    };
   }
 }
