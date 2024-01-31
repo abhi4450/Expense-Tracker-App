@@ -10,7 +10,7 @@ exports.getsignupForm = (req, res, next) => {
 
 exports.getAllExpenses = async (req, res, next) => {
   try {
-    const expenses = await Expense.findAll();
+    const expenses = await req.user.getExpenses();
 
     return res.status(200).json({ expenses: expenses });
   } catch (error) {

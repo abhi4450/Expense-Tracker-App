@@ -2,10 +2,11 @@ const User = require("../models/User");
 const Expense = require("../models/Expense");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 function generateAccessToken(userId) {
-  const secretKey = "abhi1993";
-  return jwt.sign({ userId }, secretKey);
+  const jwtSecret = process.env.JWT_SECRET;
+  return jwt.sign({ userId }, jwtSecret);
 }
 
 exports.signupUser = async (req, res, next) => {
@@ -72,7 +73,7 @@ exports.postExpenseForm = async (req, res, next) => {
   const expenseData = req.body;
 
   try {
-    const expense = await Expense.create(expenseData);
+    const expense = await req.user.createExpense(expenseData);
     res
       .status(201)
       .json({ message: "Expenses saved succesfully", expense: expense });
@@ -84,10 +85,13 @@ exports.postExpenseForm = async (req, res, next) => {
 
 exports.deleteExpenseItem = async (req, res, next) => {
   const expenseId = req.params.expenseId;
-  console.log("helloooooooo", expenseId);
+
   try {
-    const expenseItem = await Expense.findByPk(expenseId);
-    await expenseItem.destroy();
+    const expenseItem = await req.user.getExpenses({
+      where: { id: expenseId },
+    });
+    console.log("expense Item to be deleted>>>>>>>>>", expenseItem);
+    await expenseItem[0].destroy();
     res.status(204).json({ message: "Item deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

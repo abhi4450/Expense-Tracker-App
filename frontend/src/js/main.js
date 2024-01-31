@@ -1,3 +1,8 @@
+const commonHeaders = {
+  Authorization: localStorage.getItem("token"),
+  // Add any other common headers here
+};
+
 const expenseInput = document.querySelector("#exp");
 const descInput = document.querySelector("#desc");
 const catInput = document.querySelector("#category");
@@ -51,7 +56,8 @@ async function saveExpensesToBackend(expenseData) {
   try {
     const response = await axios.post(
       "http://localhost:3000/api/expense/addexpense",
-      expenseData
+      expenseData,
+      { headers: commonHeaders }
     );
     return { success: true, data: response.data, status: response.status };
   } catch (error) {
@@ -68,10 +74,9 @@ async function fetchExpenses() {
     const token = localStorage.getItem("token");
     const response = await axios.get(
       "http://localhost:3000/api/expense/getExpenses",
+
       {
-        headers: {
-          Authorization: token,
-        },
+        headers: commonHeaders,
       }
     );
     return { success: true, data: response.data, status: response.status };
@@ -102,7 +107,7 @@ async function displayExpenses(expenses) {
       newli.append(spanElement);
 
       newli.append(
-        ` ${expense.expense_amount}-${expense.description}-${expense.category}`
+        `${expense.expense_amount}-${expense.description}-${expense.category}`
       );
 
       const deleteButton = document.createElement("button");
@@ -142,7 +147,10 @@ async function displayExpenses(expenses) {
 async function deleteExpense(expenseId) {
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/expense/deleteExpense/${expenseId}`
+      `http://localhost:3000/api/expense/deleteExpense/${expenseId}`,
+      {
+        headers: commonHeaders,
+      }
     );
     return { success: true, message: "Item deleted successfully" };
   } catch (error) {
