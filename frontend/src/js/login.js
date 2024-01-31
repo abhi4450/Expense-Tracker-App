@@ -1,4 +1,3 @@
-// JavaScript (login.js)
 const loginButton = document.querySelector("#login");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#pass");
@@ -20,6 +19,7 @@ async function UserLoginHandler() {
 
     if (result.success) {
       if (result.status === 200) {
+        localStorage.setItem("token", result.data.token);
         alert(result.data.message);
         window.location.href = "index.html";
       } else {

@@ -11,11 +11,15 @@ const cors = require("cors");
 const userRoutes = require("./routes/users");
 const adminRoutes = require("./routes/admin");
 const User = require("./models/User");
+const Expense = require("./models/Expense");
 const sequelize = require("./util/database");
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+User.hasMany(Expense);
+Expense.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
 app.use("/api", adminRoutes);
 app.use("/api", userRoutes);

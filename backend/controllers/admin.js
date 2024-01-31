@@ -1,6 +1,12 @@
 const User = require("../models/User");
 const Expense = require("../models/Expense");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+function generateAccessToken(userId) {
+  const secretKey = "abhi1993";
+  return jwt.sign({ userId }, secretKey);
+}
 
 exports.signupUser = async (req, res, next) => {
   try {
@@ -51,8 +57,11 @@ exports.loginValidUser = async (req, res, next) => {
         message: "Email is valid but incorrect password",
       });
     }
-
-    return res.status(200).json({ message: "User Logged In Successfully." });
+    const token = generateAccessToken(user.id);
+    return res.status(200).json({
+      message: "User Logged In Successfully.",
+      token: token,
+    });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });

@@ -65,8 +65,14 @@ async function saveExpensesToBackend(expenseData) {
 
 async function fetchExpenses() {
   try {
+    const token = localStorage.getItem("token");
     const response = await axios.get(
-      "http://localhost:3000/api/expense/getExpenses"
+      "http://localhost:3000/api/expense/getExpenses",
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
     );
     return { success: true, data: response.data, status: response.status };
   } catch (error) {
@@ -90,7 +96,14 @@ async function displayExpenses(expenses) {
         "text-center"
       );
 
-      newli.innerText = `${expense.expense_amount}-${expense.description}-${expense.category}`;
+      const spanElement = document.createElement("span");
+      spanElement.classList.add("float-start");
+      spanElement.innerHTML = `&#9997;`;
+      newli.append(spanElement);
+
+      newli.append(
+        ` ${expense.expense_amount}-${expense.description}-${expense.category}`
+      );
 
       const deleteButton = document.createElement("button");
       deleteButton.classList.add(
