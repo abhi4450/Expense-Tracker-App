@@ -21,6 +21,11 @@ async function UserLoginHandler() {
       if (result.status === 200) {
         localStorage.setItem("token", result.data.token);
         alert(result.data.message);
+        if (result.data.ispremium) {
+          localStorage.setItem("ispremiumUser", result.data.ispremium);
+        } else {
+          localStorage.removeItem("ispremiumUser");
+        }
         window.location.href = "index.html";
       } else {
         console.warn("Unexpected status code:", result.status);

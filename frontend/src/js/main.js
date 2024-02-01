@@ -11,6 +11,10 @@ const listItem = document.querySelector("#itemList");
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
+    const premiummembership = localStorage.getItem("ispremiumUser");
+    if (premiummembership === true) {
+      displayPremiumFeature();
+    }
     result = await fetchExpenses();
     if (result.success) {
       if (result.status === 200) {
@@ -71,7 +75,6 @@ async function saveExpensesToBackend(expenseData) {
 
 async function fetchExpenses() {
   try {
-    const token = localStorage.getItem("token");
     const response = await axios.get(
       "http://localhost:3000/api/expense/getExpenses",
 
@@ -167,34 +170,99 @@ const rzpButton = document.querySelector("#rzp-button");
 rzpButton.addEventListener("click", paymentHandler);
 
 async function paymentHandler(event) {
-  const token = localStorage.getItem("token");
-  const response = await axios.get(
-    "http://localhost:3000/purchase/premiummembership",
-    {
-      headers: commonHeaders,
-    }
+  try {
+    const response = await axios.get(
+      "http://localhost:3000/purchase/premiummembership",
+      {
+        headers: commonHeaders,
+      }
+    );
+
+    const { key_id, order } = response.data;
+
+    const options = {
+      key: key_id,
+      order_id: order.id,
+      handler: async function (response) {
+        try {
+          const updateResponse = await axios.post(
+            "http://localhost:3000/purchase/updatetransactionstatus",
+            {
+              order_id: order.id,
+              payment_id: response.razorpay_payment_id,
+            },
+            { headers: commonHeaders }
+          );
+
+          if (
+            updateResponse.data.success &&
+            updateResponse.data.ispremiumuser
+          ) {
+            localStorage.setItem(
+              "ispremiumUser",
+              updateResponse.data.ispremiumuser
+            );
+            displayPremiumFeature();
+            console.log("Transaction Successful");
+          }
+        } catch (error) {
+          console.error("Error updating transaction status:", error);
+          alert("An error occurred. Please try again.");
+        }
+      },
+    };
+    const razorpayInstance = new Razorpay(options);
+    razorpayInstance.open();
+    event.preventDefault();
+    razorpayInstance.on("payment.failed", async function (response) {
+      if (response.error.code === "BAD_REQUEST_ERROR") {
+        try {
+          const updateFailedResponse = await axios.post(
+            "http://localhost:3000/purchase/updatetransactionstatus",
+            {
+              order_id: order.id,
+              payment_id: response.razorpay_payment_id,
+            },
+            { headers: commonHeaders }
+          );
+        } catch (error) {
+          localStorage.setItem("ispremiumUser", false);
+          console.log("Transaction Failed");
+          alert("Transaction Failed. Please try again.");
+          console.error("Transaction request declined>>>>>>>>", error);
+        }
+      }
+    });
+    // razorpayInstance.on("payment.failed", async function (response) {
+    //   if (response.error.code === "BAD_REQUEST_ERROR") {
+    //     await axios.post(
+    //       "http://localhost:3000/purchase/updatetransactionstatus",
+    //       {
+    //         order_id: order.id,
+    //         payment_id: response.razorpay_payment_id,
+    //       },
+    //       { headers: commonHeaders }
+    //     );
+    //   }
+    // });
+  } catch (error) {
+    console.error("Error initiating payment:", error);
+    alert("An error occurred while initiating payment. Please try again.");
+  }
+}
+
+function displayPremiumFeature() {
+  rzpButton.style.display = "none";
+  const premiumMessage = document.createElement("p");
+  premiumMessage.textContent = "You are a Premium User!";
+  premiumMessage.classList.add(
+    "text-success",
+    "fw-bold",
+    "mt-3",
+    "text-center"
   );
-  const options = {
-    key: response.data.key_id, //Enter the key Id generated from the dashboard
-    order_id: response.data.oder.id, // for one time payment
-    //This handler function will handle the success payment
-    handler: async function (response) {
-      await axios.post(
-        "http://localhost:3000/purchase/updatetransactionstatus",
-        {
-          order_id: options.order_id,
-          payment_id: response.razorpay_payment_id,
-        },
-        { headers: commonHeaders }
-      );
-      alert("You Are a Premium User Now");
-    },
-  };
-  const rzpl = new Razorpay(options);
-  rzpl.open();
-  event.preventDefault();
-  rzpl.on("payment.failed", function (response) {
-    console.log(response);
-    alert("Something went wrong");
-  });
+
+  const msgDiv = document.querySelector("#msg");
+  // You can choose to remove the button if needed
+  msgDiv.append(premiumMessage);
 }

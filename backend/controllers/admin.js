@@ -59,9 +59,11 @@ exports.loginValidUser = async (req, res, next) => {
       });
     }
     const token = generateAccessToken(user.id);
+    const ispremium = user.ispremiumuser;
     return res.status(200).json({
       message: "User Logged In Successfully.",
       token: token,
+      ispremium: ispremium,
     });
   } catch (error) {
     console.error("Error:", error);

@@ -7,7 +7,7 @@ const User = sequelize.define("user", {
     allowNull: false,
   },
   email: {
-    type: Sequelize.STRING(255), 
+    type: Sequelize.STRING(255),
     unique: true,
     allowNull: false,
   },
@@ -15,6 +15,7 @@ const User = sequelize.define("user", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  ispremiumuser: Sequelize.BOOLEAN,
 });
 
 module.exports = User;
