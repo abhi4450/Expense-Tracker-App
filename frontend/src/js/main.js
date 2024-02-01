@@ -161,3 +161,40 @@ async function deleteExpense(expenseId) {
     };
   }
 }
+
+const rzpButton = document.querySelector("#rzp-button");
+
+rzpButton.addEventListener("click", paymentHandler);
+
+async function paymentHandler(event) {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(
+    "http://localhost:3000/purchase/premiummembership",
+    {
+      headers: commonHeaders,
+    }
+  );
+  const options = {
+    key: response.data.key_id, //Enter the key Id generated from the dashboard
+    order_id: response.data.oder.id, // for one time payment
+    //This handler function will handle the success payment
+    handler: async function (response) {
+      await axios.post(
+        "http://localhost:3000/purchase/updatetransactionstatus",
+        {
+          order_id: options.order_id,
+          payment_id: response.razorpay_payment_id,
+        },
+        { headers: commonHeaders }
+      );
+      alert("You Are a Premium User Now");
+    },
+  };
+  const rzpl = new Razorpay(options);
+  rzpl.open();
+  event.preventDefault();
+  rzpl.on("payment.failed", function (response) {
+    console.log(response);
+    alert("Something went wrong");
+  });
+}
