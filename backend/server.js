@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 
 const cors = require("cors");
 
+const leaderboardRoutes = require("./routes/leaderboard");
 const purchaseRoutes = require("./routes/purchase");
 const userRoutes = require("./routes/users");
 const adminRoutes = require("./routes/admin");
@@ -25,6 +26,7 @@ Expense.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Order);
 Order.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
+app.use("/premium", leaderboardRoutes);
 app.use("/purchase", purchaseRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", userRoutes);
