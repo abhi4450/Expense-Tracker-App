@@ -76,6 +76,8 @@ exports.postExpenseForm = async (req, res, next) => {
 
   try {
     const expense = await req.user.createExpense(expenseData);
+
+    await req.user.increment("total_expense", { by: expense.expense_amount });
     res
       .status(201)
       .json({ message: "Expenses saved succesfully", expense: expense });

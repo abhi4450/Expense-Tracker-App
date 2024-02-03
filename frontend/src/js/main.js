@@ -423,7 +423,7 @@ function showLeaderBoardToPremiumUsers() {
           const expenseCell = row.insertCell(1);
 
           nameCell.textContent = user.name;
-          expenseCell.textContent = user.total_cost;
+          expenseCell.textContent = user.total_expense;
         });
 
         table.appendChild(tableBody);
