@@ -16,7 +16,30 @@ const User = require("./models/User");
 const Expense = require("./models/Expense");
 const Order = require("./models/Order");
 const sequelize = require("./util/database");
+const Sib = require("sib-api-v3-sdk");
 require("dotenv").config();
+
+const client = Sib.ApiClient.instance;
+const apiKey = client.authentications["api-key"];
+apiKey.apiKey = process.env.SIB_API_KEY;
+const tranEmailApi = new Sib.TransactionalEmailsApi();
+const sender = {
+  email: "abhishek.anshu1991@gmail.com",
+  name: "Sharpener-Abhi",
+};
+const receivers = [
+  {
+    email: "abhishek.career1993@gmail.com",
+  },
+];
+
+tranEmailApi.sendTransacEmail({
+  sender,
+  to: receivers,
+  subject: "Reset Password",
+  textContent: `Sharpener-Abhi`,
+  htmlContent: `<h1>Click this link below to reset your passwrod</h1><a href="#"></a>`,
+});
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
