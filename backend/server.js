@@ -16,6 +16,7 @@ const User = require("./models/User");
 const Expense = require("./models/Expense");
 const Order = require("./models/Order");
 const sequelize = require("./util/database");
+require("dotenv").config();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));

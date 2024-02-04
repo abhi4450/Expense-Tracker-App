@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Expense = require("../models/Expense");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const sequelize = require("../util/database");
 
 function generateAccessToken(userId) {
   const jwtSecret = process.env.JWT_SECRET;
@@ -73,31 +73,95 @@ exports.loginValidUser = async (req, res, next) => {
 
 exports.postExpenseForm = async (req, res, next) => {
   const expenseData = req.body;
+  const t = await sequelize.transaction();
 
   try {
-    const expense = await req.user.createExpense(expenseData);
+    const expense = await req.user.createExpense(expenseData, {
+      transaction: t,
+    });
 
-    await req.user.increment("total_expense", { by: expense.expense_amount });
+    await req.user.increment("total_expense", {
+      by: expense.expense_amount,
+      transaction: t,
+    });
+
+    // If everything is successful, commit the transaction
+    await t.commit();
+
     res
       .status(201)
-      .json({ message: "Expenses saved succesfully", expense: expense });
+      .json({ message: "Expenses saved successfully", expense: expense });
   } catch (error) {
+    console.log(error);
+
+    // If there's an error, rollback the transaction
+    await t.rollback();
+
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// exports.postExpenseForm = async (req, res, next) => {
+//   const expenseData = req.body;
+
+//   try {
+//     const expense = await req.user.createExpense(expenseData);
+
+//     await req.user.increment("total_expense", { by: expense.expense_amount });
+//     res
+//       .status(201)
+//       .json({ message: "Expenses saved succesfully", expense: expense });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+exports.deleteExpenseItem = async (req, res, next) => {
+  const expenseId = req.params.expenseId;
+  const t = await sequelize.transaction(); // Assuming sequelize is your ORM instance
+
+  try {
+    const expenseItem = await req.user.getExpenses({
+      where: { id: expenseId },
+      transaction: t,
+    });
+
+    const expenseAmount = expenseItem[0].expense_amount;
+
+    // Destroy the expense item
+    await expenseItem[0].destroy({ transaction: t });
+
+    // Update total_expense in the user table
+    await req.user.decrement("total_expense", {
+      by: expenseAmount,
+      transaction: t,
+    });
+
+    // If everything is successful, commit the transaction
+    await t.commit();
+
+    res.status(204).json({ message: "Item deleted successfully" });
+  } catch (error) {
+    // If there's an error, rollback the transaction
+    await t.rollback();
+
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-exports.deleteExpenseItem = async (req, res, next) => {
-  const expenseId = req.params.expenseId;
+// exports.deleteExpenseItem = async (req, res, next) => {
+//   const expenseId = req.params.expenseId;
 
-  try {
-    const expenseItem = await req.user.getExpenses({
-      where: { id: expenseId },
-    });
-    console.log("expense Item to be deleted>>>>>>>>>", expenseItem);
-    await expenseItem[0].destroy();
-    res.status(204).json({ message: "Item deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+//   try {
+//     const expenseItem = await req.user.getExpenses({
+//       where: { id: expenseId },
+//     });
+//     console.log("expense Item to be deleted>>>>>>>>>", expenseItem);
+//     await expenseItem[0].destroy();
+//     res.status(204).json({ message: "Item deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };

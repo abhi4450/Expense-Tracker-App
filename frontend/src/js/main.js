@@ -204,6 +204,7 @@ async function paymentHandler(event) {
               updateResponse.data.ispremiumuser
             );
             displayPremiumFeature();
+            showLeaderBoardToPremiumUsers();
             console.log("Transaction Successful");
           }
         } catch (error) {
