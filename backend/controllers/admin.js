@@ -1,12 +1,12 @@
 const User = require("../models/User");
-const Expense = require("../models/Expense");
+
 const ForgotPasswordRequest = require("../models/ForgotPasswordRequest");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const sequelize = require("../util/database");
+const { Op } = require("sequelize");
 const { sendResetEmail } = require("../services/emailservice");
 const uuid = require("uuid");
-const path = require("path");
 
 const generateUUID = () => {
   // Generate a v4 (random) UUID
@@ -162,36 +162,55 @@ exports.deleteExpenseItem = async (req, res, next) => {
 
 exports.handleForgotPassword = async (req, res, next) => {
   const { email } = req.body;
-
-  // Generate a unique requestId (UUID)
-  const requestId = generateUUID();
-
-  // Build the reset link with the requestId
-  const resetLink = `http://localhost:3000/password/resetpassword/${requestId}`;
-
-  // Save the reset request to the ForgotPasswordRequests table
   try {
+    // Check if there is already an active request for the user
+    const existingRequest = await ForgotPasswordRequest.findOne({
+      where: {
+        userId: {
+          [Op.not]: null,
+        },
+        isactive: true,
+      },
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({
+        message:
+          "There is already an active password reset request for this user.",
+      });
+    }
+
+    // Generate a unique requestId (UUID)
+    const requestId = generateUUID();
+
+    // Build the reset link with the requestId
+    const resetLink = `http://localhost:3000/api/password/resetpassword/${requestId}`;
+
+    // Save the reset request to the ForgotPasswordRequests table
+
     const user = await User.findOne({
       where: {
         email: email,
       },
     });
-    await ForgotPasswordRequest.create({
-      userId: user.id,
-      id: requestId,
-      isActive: true,
-    });
+    if (user) {
+      await ForgotPasswordRequest.create({
+        userId: user.id,
+        id: requestId,
+        isactive: true,
+      });
+    }
 
     // Send the email with the reset link
     const sender = {
-      email: "abhishek.anshu1991@gmail.com",
+      email: "abhishek.career1993@gmail.com",
       name: "Sharpener-Abhi",
     };
 
-    const receivers = [{ email }];
+    const receivers = [{ email: email }];
 
     const subject = "Password Reset";
-    const textContent = `Click the link below to reset your password: ${resetLink}`;
+    const textContent = `Click the link below to reset your password:`;
     const htmlContent = `<h1>Password Reset</h1><p>Click the link below to reset your password:</p><p><a href="${resetLink}">Reset Password</a></p>`;
 
     await sendResetEmail(sender, receivers, subject, textContent, htmlContent);
@@ -214,7 +233,7 @@ exports.handleresetPassword = async (req, res, next) => {
     const resetRequest = await ForgotPasswordRequest.findOne({
       where: {
         id: requestId,
-        isActive: true,
+        isactive: true,
       },
     });
 
@@ -222,9 +241,13 @@ exports.handleresetPassword = async (req, res, next) => {
       return res.status(404).json({ message: "Invalid or expired reset link" });
     }
 
-    res.sendFile(
-      path.join(__dirname, "../frontend", "public", "reset-password-form.html")
-    );
+    res.send(`
+    <form action="http://localhost:3000/api/password/updatepassword/${requestId}" method="POST">
+      <label for="password">Enter a new password:</label>
+      <input type="password" name="password" required>
+      <button type="submit">update password</button>
+    </form>
+  `);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -234,13 +257,13 @@ exports.handleresetPassword = async (req, res, next) => {
 exports.updatePassword = async (req, res, next) => {
   try {
     const requestId = req.params.requestId;
-    const newPassword = req.body.newPassword;
+    const newPassword = req.body.password;
 
     // Check if the request exists and is active
     const resetRequest = await ForgotPasswordRequest.findOne({
       where: {
         id: requestId,
-        isActive: true,
+        isactive: true,
       },
     });
 
@@ -259,12 +282,10 @@ exports.updatePassword = async (req, res, next) => {
     await user.save();
 
     // Deactivate the reset request
-    resetRequest.isActive = false;
+    resetRequest.isactive = false;
     await resetRequest.save();
 
-    return res.status(200).json({
-      message: "Password updated successfully",
-    });
+    return res.status(200).send("<h1>password updated successfully");
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });

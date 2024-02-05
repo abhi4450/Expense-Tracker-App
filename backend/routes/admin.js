@@ -10,7 +10,7 @@ router.post("/user/signup", adminController.signupUser);
 router.post("/user/login", adminController.loginValidUser);
 
 router.post("/password/forgotpassword", adminController.handleForgotPassword);
-router.post(
+router.get(
   "/password/resetpassword/:requestId",
   adminController.handleresetPassword
 );

@@ -1,11 +1,9 @@
-// login.js
-
 document.addEventListener("DOMContentLoaded", function () {
   const loginButton = document.querySelector("#login");
   const emailInput = document.querySelector("#email");
   const passwordInput = document.querySelector("#pass");
   const newDiv = document.querySelector("#msg");
-  const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+
   const submitForgotPassword = document.getElementById("submitForgotPassword");
 
   loginButton.addEventListener("click", UserLoginHandler);
@@ -82,8 +80,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // Handle the response from the backend API as needed
         alert(response.data.message);
       } catch (error) {
-        console.error("Error submitting forgot password form:", error);
-        alert("Failed to submit forgot password form. Please try again.");
+        if (error.response.status === 400) {
+          // Handle status 400 (Bad Request) from the backend
+          alert(error.response.data.message);
+        } else {
+          console.error("Error submitting forgot password form:", error);
+          alert("Failed to submit forgot password form. Please try again.");
+        }
       }
     });
   }

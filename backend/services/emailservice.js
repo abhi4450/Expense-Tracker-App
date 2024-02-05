@@ -20,8 +20,6 @@ const sendResetEmail = async (
       textContent,
       htmlContent,
     });
-
-   
   } catch (error) {
     console.error("Error sending email:", error);
     throw new Error("Error sending email");
