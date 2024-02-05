@@ -25,7 +25,6 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
 app.use("/premium", leaderboardRoutes);
 app.use("/purchase", purchaseRoutes);
 app.use("/api", adminRoutes);

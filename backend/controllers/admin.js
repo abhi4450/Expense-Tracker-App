@@ -291,6 +291,10 @@ exports.updatePassword = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.generateReport = async (req, res, next) => {
+  
+};
 // exports.handleForgotPassword = async (req, res, next) => {
 //   const { email } = req.body;
 

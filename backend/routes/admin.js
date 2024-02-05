@@ -23,6 +23,10 @@ router.post(
   userAuth.authenticate,
   adminController.postExpenseForm
 );
+router.post(
+  "/expense/generateReport/:reportType",
+  adminController.generateReport
+);
 router.delete(
   "/expense/deleteExpense/:expenseId",
   userAuth.authenticate,

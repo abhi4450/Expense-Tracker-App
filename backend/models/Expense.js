@@ -14,6 +14,10 @@ const Expense = sequelize.define("expense", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  expense_date: {
+    type: Sequelize.DATEONLY, // Use DATEONLY type for storing only the date without time
+    allowNull: false,
+  },
 });
 
 module.exports = Expense;

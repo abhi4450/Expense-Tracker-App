@@ -8,6 +8,10 @@ const descInput = document.querySelector("#desc");
 const catInput = document.querySelector("#category");
 const addButton = document.querySelector("#addExp");
 const listItem = document.querySelector("#itemList");
+const dateInput = document.querySelector("#date");
+const reportTypeSelect = document.querySelector("#reportType");
+const generateReportButton = document.querySelector("#generateReport");
+const reportMsg = document.querySelector("#reportMsg");
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -36,11 +40,13 @@ async function expenseHandler(event) {
   const expense_amount = expenseInput.value;
   const description = descInput.value;
   const category = catInput.value;
+  const expense_date = dateInput.value;
 
   const expenseData = {
     expense_amount: expense_amount,
     description: description,
     category: category,
+    expense_date: expense_date,
   };
   try {
     const result = await saveExpensesToBackend(expenseData);
@@ -270,6 +276,27 @@ function displayPremiumFeature() {
   // You can choose to remove the button if needed
   msgDiv.append(premiumMessage);
 }
+
+
+generateReportButton.addEventListener("click", generateReport); 
+
+async function generateReport() {
+  const selectedReportType = reportTypeSelect.value;
+
+  try {
+    const result = await axios.post(
+      `http://localhost:3000/api/expense/generateReport/${selectedReportType}`,
+      {},
+      { headers: commonHeaders }
+    );
+
+    reportMsg.textContent = result.data.message;
+  } catch (error) {
+    console.error("Error generating report:", error);
+    reportMsg.textContent = "Failed to generate report. Please try again.";
+  }
+}
+
 
 // function showLeaderBoardToPremiumUsers() {
 //   const leaderboardButton = document.createElement("button");
