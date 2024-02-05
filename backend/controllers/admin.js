@@ -1,8 +1,17 @@
 const User = require("../models/User");
 const Expense = require("../models/Expense");
+const ForgotPasswordRequest = require("../models/ForgotPasswordRequest");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const sequelize = require("../util/database");
+const { sendResetEmail } = require("../services/emailservice");
+const uuid = require("uuid");
+const path = require("path");
+
+const generateUUID = () => {
+  // Generate a v4 (random) UUID
+  return uuid.v4();
+};
 
 function generateAccessToken(userId) {
   const jwtSecret = process.env.JWT_SECRET;
@@ -151,11 +160,149 @@ exports.deleteExpenseItem = async (req, res, next) => {
   }
 };
 
-exports.handleForgotPassword = (req, res, next) => {
-  
+exports.handleForgotPassword = async (req, res, next) => {
   const { email } = req.body;
-  res.status(200).json({ message: "Password reset email sent successfully." });
-}
+
+  // Generate a unique requestId (UUID)
+  const requestId = generateUUID();
+
+  // Build the reset link with the requestId
+  const resetLink = `http://localhost:3000/password/resetpassword/${requestId}`;
+
+  // Save the reset request to the ForgotPasswordRequests table
+  try {
+    const user = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+    await ForgotPasswordRequest.create({
+      userId: user.id,
+      id: requestId,
+      isActive: true,
+    });
+
+    // Send the email with the reset link
+    const sender = {
+      email: "abhishek.anshu1991@gmail.com",
+      name: "Sharpener-Abhi",
+    };
+
+    const receivers = [{ email }];
+
+    const subject = "Password Reset";
+    const textContent = `Click the link below to reset your password: ${resetLink}`;
+    const htmlContent = `<h1>Password Reset</h1><p>Click the link below to reset your password:</p><p><a href="${resetLink}">Reset Password</a></p>`;
+
+    await sendResetEmail(sender, receivers, subject, textContent, htmlContent);
+
+    res.status(200).json({
+      message:
+        "Password reset email sent successfully, check your email please",
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.handleresetPassword = async (req, res, next) => {
+  try {
+    const requestId = req.params.requestId;
+
+    // Check if the request exists and is active
+    const resetRequest = await ForgotPasswordRequest.findOne({
+      where: {
+        id: requestId,
+        isActive: true,
+      },
+    });
+
+    if (!resetRequest) {
+      return res.status(404).json({ message: "Invalid or expired reset link" });
+    }
+
+    res.sendFile(
+      path.join(__dirname, "../frontend", "public", "reset-password-form.html")
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.updatePassword = async (req, res, next) => {
+  try {
+    const requestId = req.params.requestId;
+    const newPassword = req.body.newPassword;
+
+    // Check if the request exists and is active
+    const resetRequest = await ForgotPasswordRequest.findOne({
+      where: {
+        id: requestId,
+        isActive: true,
+      },
+    });
+
+    if (!resetRequest) {
+      return res.status(404).json({ message: "Invalid or expired reset link" });
+    }
+
+    // Update the user's password
+    const user = await User.findByPk(resetRequest.userId);
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the database
+    user.password = hashedPassword;
+    await user.save();
+
+    // Deactivate the reset request
+    resetRequest.isActive = false;
+    await resetRequest.save();
+
+    return res.status(200).json({
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+// exports.handleForgotPassword = async (req, res, next) => {
+//   const { email } = req.body;
+
+//   const sender = {
+//     email: "abhishek.anshu1991@gmail.com",
+//     name: "Sharpener-Abhi",
+//   };
+
+//   const receivers = [
+//     {
+//       email: email,
+//     },
+//   ];
+
+//   const subject = "This email is regarding Password Reset";
+//   const textContent = `Kindly click the link below to reset your password:`;
+//   const htmlContent = `<h1>Password Reset</h1><p>Click the link below to reset your password:</p><p><a href="https://www.google.com/">Reset Password</a></p>`;
+
+//   try {
+//     await sendResetEmail(sender, receivers, subject, textContent, htmlContent);
+
+//     res.status(200).json({
+//       message: "Password reset email sent successfully,check your email please",
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+// exports.handleForgotPassword = (req, res, next) => {
+
+//   const { email } = req.body;
+//   res.status(200).json({ message: "Password reset email sent successfully." });
+// }
 
 // exports.deleteExpenseItem = async (req, res, next) => {
 //   const expenseId = req.params.expenseId;
