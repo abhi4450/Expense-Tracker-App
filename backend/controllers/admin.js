@@ -292,9 +292,7 @@ exports.updatePassword = async (req, res, next) => {
   }
 };
 
-exports.generateReport = async (req, res, next) => {
-  
-};
+
 // exports.handleForgotPassword = async (req, res, next) => {
 //   const { email } = req.body;
 
