@@ -8,16 +8,22 @@ const descInput = document.querySelector("#desc");
 const catInput = document.querySelector("#category");
 const addButton = document.querySelector("#addExp");
 const listItem = document.querySelector("#itemList");
+const downloadFileButton = document.querySelector("#downloadFile");
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
     const premiummembership = localStorage.getItem("ispremiumUser");
+    if (!premiummembership) {
+      downloadFileButton.disabled = true;
+    }
+
     if (premiummembership) {
       displayPremiumFeature();
       showLeaderBoardToPremiumUsers();
-
+      downloadFileButton.disabled = false;
       downloadFileButton.addEventListener("click", handleDownload);
     }
+    
     result = await fetchExpenses();
     if (result.success) {
       if (result.status === 200) {
@@ -357,8 +363,6 @@ function showLeaderBoardToPremiumUsers() {
     }
   });
 }
-
-const downloadFileButton = document.querySelector("#downloadFile");
 
 async function handleDownload() {
   try {
