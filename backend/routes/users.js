@@ -11,5 +11,15 @@ router.get(
   userAuth.authenticate,
   userController.getAllExpenses
 );
+router.get(
+  "/user/download",
+  userAuth.authenticate,
+  userController.downloadFileHandler
+);
+router.get(
+  "/user/downloadedFiles",
+  userAuth.authenticate,
+  userController.getDownloadedFiles
+);
 
 module.exports = router;

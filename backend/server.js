@@ -16,6 +16,7 @@ const adminRoutes = require("./routes/admin");
 const User = require("./models/User");
 const Expense = require("./models/Expense");
 const Order = require("./models/Order");
+const DownloadedFile = require("./models/DownloadedFile");
 const ForgotPasswordRequest = require("./models/ForgotPasswordRequest");
 const sequelize = require("./util/database");
 
@@ -38,6 +39,14 @@ User.hasMany(ForgotPasswordRequest);
 ForgotPasswordRequest.belongsTo(User, {
   constraints: true,
   onDelete: "CASCADE",
+});
+User.hasMany(DownloadedFile, {
+  foreignKey: "userId", // Assuming 'userId' is the foreign key in the FileDownloaded table
+  onDelete: "CASCADE", // Delete associated files when a user is deleted
+});
+
+DownloadedFile.belongsTo(User, {
+  foreignKey: "userId", // Assuming 'userId' is the foreign key in the FileDownloaded table
 });
 
 sequelize

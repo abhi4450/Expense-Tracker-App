@@ -15,6 +15,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (premiummembership) {
       displayPremiumFeature();
       showLeaderBoardToPremiumUsers();
+
+      downloadFileButton.addEventListener("click", handleDownload);
     }
     result = await fetchExpenses();
     if (result.success) {
@@ -235,18 +237,6 @@ async function paymentHandler(event) {
         }
       }
     });
-    // razorpayInstance.on("payment.failed", async function (response) {
-    //   if (response.error.code === "BAD_REQUEST_ERROR") {
-    //     await axios.post(
-    //       "http://localhost:3000/purchase/updatetransactionstatus",
-    //       {
-    //         order_id: order.id,
-    //         payment_id: response.razorpay_payment_id,
-    //       },
-    //       { headers: commonHeaders }
-    //     );
-    //   }
-    // });
   } catch (error) {
     console.error("Error initiating payment:", error);
     alert("An error occurred while initiating payment. Please try again.");
@@ -270,77 +260,6 @@ function displayPremiumFeature() {
   // You can choose to remove the button if needed
   msgDiv.append(premiumMessage);
 }
-
-// function showLeaderBoardToPremiumUsers() {
-//   const leaderboardButton = document.createElement("button");
-//   const containerElement = document.querySelector("#leaderboard");
-//   const newDivElement = document.createElement("div");
-//   let table = document.createElement("table");
-//   let tableBody = document.createElement("tbody");
-//   let tableHead = document.createElement("thead");
-//   let headerRow = tableHead.insertRow();
-//   let nameHeader = document.createElement("th");
-//   let expenseHeader = document.createElement("th");
-
-//   newDivElement.classList.add("text-center", "mt-3");
-//   leaderboardButton.type = "button";
-//   leaderboardButton.textContent = "Show Leaderboard";
-//   leaderboardButton.classList.add("btn", "btn-warning", "btn-lg");
-//   newDivElement.append(leaderboardButton);
-//   containerElement.append(newDivElement);
-
-//   let isLeaderboardVisible = false;
-
-//   // Set header text
-//   nameHeader.textContent = "Name";
-//   expenseHeader.textContent = "Total Expense";
-
-//   // Append header cells to the header row
-//   headerRow.appendChild(nameHeader);
-//   headerRow.appendChild(expenseHeader);
-
-//   // Append the header to the table
-//   tableHead.appendChild(headerRow);
-//   table.appendChild(tableHead);
-
-//   leaderboardButton.addEventListener("click", async () => {
-//     isLeaderboardVisible = !isLeaderboardVisible;
-
-//     if (isLeaderboardVisible) {
-//       // Make a GET request to fetch leaderboard data
-//       try {
-//         const leaderboardResponse = await axios.get(
-//           "http://localhost:3000/premium/showleaderboard",
-//           { headers: commonHeaders }
-//         );
-
-//         const leaderboardData = leaderboardResponse.data;
-
-//         // Clear previous table content
-//         tableBody.innerHTML = "";
-
-//         // Assuming the leaderboardData is an array of objects
-//         leaderboardData.forEach((user) => {
-//           const row = tableBody.insertRow();
-//           const nameCell = row.insertCell(0);
-//           const expenseCell = row.insertCell(1);
-
-//           nameCell.textContent = user.name;
-//           expenseCell.textContent = user.total_cost;
-//         });
-
-//         table.appendChild(tableBody);
-//         table.classList.add("table", "table-bordered", "mt-3");
-//         containerElement.appendChild(table);
-//       } catch (error) {
-//         console.error("Error fetching leaderboard data:", error);
-//       }
-//     } else {
-//       // Clear the table when hiding it
-//       tableBody.innerHTML = "";
-//     }
-//   });
-// }
 
 function showLeaderBoardToPremiumUsers() {
   const leaderboardButton = document.createElement("button");
@@ -434,60 +353,67 @@ function showLeaderBoardToPremiumUsers() {
         console.error("Error fetching leaderboard data:", error);
       }
     } else {
-      // Clear the table when hiding it
       table.innerHTML = "";
     }
   });
 }
 
-// function showLeaderBoardToPremiumUsers() {
-//   const leaderboardButton = document.createElement("button");
-//   const containerElement = document.querySelector("#leaderboard");
-//   const newDivElement = document.createElement("div");
-//   let items = document.createElement("ul");
-//   newDivElement.classList.add("text-center", "mt-3");
-//   leaderboardButton.type = "button";
-//   leaderboardButton.textContent = "Show Leaderboard"; // Set the button text
-//   leaderboardButton.classList.add("btn", "btn-warning", "btn-lg"); // Add button classes
-//   newDivElement.append(leaderboardButton);
-//   containerElement.append(newDivElement);
+const downloadFileButton = document.querySelector("#downloadFile");
 
-//   const colDiv = document.createElement("div");
-//   colDiv.classList.add("col-auto", "col-md-6","m-auto");
-//   colDiv.append(items);
-//   let isLeaderboardVisible = false;
-//   leaderboardButton.addEventListener("click", async () => {
-//     isLeaderboardVisible = !isLeaderboardVisible;
+async function handleDownload() {
+  try {
+    let response = await axios.get("http://localhost:3000/api/user/download", {
+      headers: commonHeaders,
+    });
+    if (response.status === 200) {
+      const { fileURL, filename } = response.data;
+      //the backend is essentially sending a download link
+      // which if we open in browser, the file would download
+      const a = document.createElement("a");
+      a.href = fileURL;
+      a.download = filename;
+      a.click();
+      a.remove();
+      displayDownloadedFiles();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-//     if (isLeaderboardVisible) {
-//       // Make a GET request to fetch leaderboard data
-//       try {
-//         const leaderboardResponse = await axios.get(
-//           "http://localhost:3000/premium/showleaderboard",
-//           { headers: commonHeaders }
-//         );
+async function displayDownloadedFiles() {
+  try {
+    let response = await axios.get(
+      "http://localhost:3000/api/user/downloadedFiles",
+      {
+        headers: commonHeaders,
+      }
+    );
+    if (response.status === 200) {
+      const files = response.data.Allfiles;
+      const list = document.querySelector("#downloaedFileList");
 
-//         const leaderboardData = leaderboardResponse.data;
+      list.innerHTML = ""; // Clear the list before appending new files
 
-//         items.classList.add("list-group", "mt-3");
-//         containerElement.append(colDiv);
-//         // Assuming the leaderboardData is an array of objects
-//         leaderboardData.forEach((user) => {
-//           const leaderboardItem = document.createElement("li");
-//           leaderboardItem.classList.add(
-//             "list-group-item",
-//             "list-group-item-warning",
-//             "text-center"
-//           );
-//           leaderboardItem.textContent = `Name: ${user.name} - Total Expense: ${user.total_cost}`;
-//           items.append(leaderboardItem);
-//         });
-//       } catch (error) {
-//         console.error("Error fetching leaderboard data:", error);
-//       }
-//     } else {
-//       // Clear the leaderboard when hiding it
-//       items.innerHTML = "";
-//     }
-//   });
-// }
+      files.forEach((file) => {
+        const listItem = document.createElement("li");
+        listItem.classList.add("list-group-item");
+        const anchor = document.createElement("a");
+
+        anchor.href = file.fileUrl; // Set the anchor text to the filename
+
+        anchor.textContent = `my-expense-list-link-downloaded on ${new Date(
+          file.createdAt
+        ).toLocaleDateString()}`;
+
+        // Open the link in a new tab
+        anchor.target = "_blank";
+
+        listItem.appendChild(anchor);
+        list.appendChild(listItem);
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
