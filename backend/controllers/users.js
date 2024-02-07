@@ -5,15 +5,34 @@ const Expense = require("../models/Expense");
 const rootDir = require("../util/path");
 
 const s3Service = require("../services/s3service");
+const jsonexport = require("jsonexport");
 
 exports.downloadFileHandler = async (req, res, next) => {
   try {
-    const expenses = await req.user.getExpenses();
-    console.log(expenses);
-    const stringifiedExpenses = JSON.stringify(expenses);
+    const expenses = await req.user.getExpenses({
+      attributes: ["expense_amount", "description", "category", "createdAt"],
+    });
+
+    // Convert expenses to array of objects
+    const formattedExpenses = expenses.map((expense) => ({
+      expense_amount: expense.expense_amount,
+      description: expense.description,
+      category: expense.category,
+      Date: new Date(expense.createdAt).toLocaleDateString(),
+    }));
+
+    // const expenses = await req.user.getExpenses();
+
+    const csvExpenses = await jsonexport(formattedExpenses);
+    console.log("****************", csvExpenses);
+
+    // Specify filename and path within S3 bucket
     const userId = req.user.id;
-    const filename = `Expense${userId}/${new Date()}.txt`;
-    const fileURL = await s3Service.uploadToS3(stringifiedExpenses, filename);
+    const filename = `Expense${userId}/${new Date()}.csv`;
+    // const stringifiedExpenses = JSON.stringify(expenses);
+    // const userId = req.user.id;
+    // const filename = `Expense${userId}/${new Date()}.txt`;
+    const fileURL = await s3Service.uploadToS3(csvExpenses, filename);
     console.log("This>>>>>>>>>>>>>>>", fileURL);
     await req.user.createDownloadedFile({
       fileUrl: fileURL,
@@ -44,13 +63,26 @@ exports.getsignupForm = (req, res, next) => {
   res.sendFile(path.join(rootDir, "../frontend", "public", "singup.html"));
 };
 
+// Handler to get all expenses with pagination
 exports.getAllExpenses = async (req, res, next) => {
   try {
-    const expenses = await req.user.getExpenses();
+    const page = parseInt(req.query.page) || 1; // Current page number
+    const limit = parseInt(req.query.limit) || 4; // Number of items per page
+    const offset = (page - 1) * limit;
 
-    return res.status(200).json({ expenses: expenses });
+    const expenses = await req.user.getExpenses({ limit, offset });
+
+    // Query total count of expenses
+    const totalCount = await req.user.countExpenses();
+
+    const totalItems = totalCount;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res
+      .status(200)
+      .json({ expenses, totalItems, currentPage: page, totalPages });
   } catch (error) {
     console.error("Error:", error);
-    return res.status(500).json({ message: error });
+    res.status(500).json({ message: "Internal server error" });
   }
 };

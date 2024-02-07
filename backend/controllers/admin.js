@@ -110,22 +110,6 @@ exports.postExpenseForm = async (req, res, next) => {
   }
 };
 
-// exports.postExpenseForm = async (req, res, next) => {
-//   const expenseData = req.body;
-
-//   try {
-//     const expense = await req.user.createExpense(expenseData);
-
-//     await req.user.increment("total_expense", { by: expense.expense_amount });
-//     res
-//       .status(201)
-//       .json({ message: "Expenses saved succesfully", expense: expense });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
 exports.deleteExpenseItem = async (req, res, next) => {
   const expenseId = req.params.expenseId;
   const t = await sequelize.transaction(); // Assuming sequelize is your ORM instance
@@ -292,52 +276,3 @@ exports.updatePassword = async (req, res, next) => {
   }
 };
 
-
-// exports.handleForgotPassword = async (req, res, next) => {
-//   const { email } = req.body;
-
-//   const sender = {
-//     email: "abhishek.anshu1991@gmail.com",
-//     name: "Sharpener-Abhi",
-//   };
-
-//   const receivers = [
-//     {
-//       email: email,
-//     },
-//   ];
-
-//   const subject = "This email is regarding Password Reset";
-//   const textContent = `Kindly click the link below to reset your password:`;
-//   const htmlContent = `<h1>Password Reset</h1><p>Click the link below to reset your password:</p><p><a href="https://www.google.com/">Reset Password</a></p>`;
-
-//   try {
-//     await sendResetEmail(sender, receivers, subject, textContent, htmlContent);
-
-//     res.status(200).json({
-//       message: "Password reset email sent successfully,check your email please",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-// exports.handleForgotPassword = (req, res, next) => {
-
-//   const { email } = req.body;
-//   res.status(200).json({ message: "Password reset email sent successfully." });
-// }
-
-// exports.deleteExpenseItem = async (req, res, next) => {
-//   const expenseId = req.params.expenseId;
-
-//   try {
-//     const expenseItem = await req.user.getExpenses({
-//       where: { id: expenseId },
-//     });
-//     console.log("expense Item to be deleted>>>>>>>>>", expenseItem);
-//     await expenseItem[0].destroy();
-//     res.status(204).json({ message: "Item deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
