@@ -22,8 +22,28 @@ function getExpensesPerPagePreference() {
 // Use the user's preference to display the appropriate number of expenses
 const expensesPerPage = getExpensesPerPagePreference();
 
+const logoutButton = document.querySelector("#logoutButton");
+logoutButton.addEventListener("click", (event) => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("ispremiumUser");
+  window.location.href = "http://localhost:3000/api/user/loginPage";
+});
+
 window.addEventListener("DOMContentLoaded", async () => {
   try {
+    // Fetch user data to get the username
+    const userData = await fetchUserData();
+    if (userData.success) {
+      const username = userData.data.username;
+      // Display the username in the navbar
+      const usernameElement = document.getElementById("username");
+      if (usernameElement) {
+        usernameElement.textContent = username;
+      }
+    } else {
+      console.error("Failed to fetch user data:", userData.error);
+    }
+
     downloadFileButton.addEventListener("click", handleDownload);
     const premiummembership = localStorage.getItem("ispremiumUser");
     if (!premiummembership) {
@@ -58,6 +78,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     console.error("Unexpected error:", error);
   }
 });
+
+async function fetchUserData() {
+  try {
+    const response = await axios.get("http://localhost:3000/api/user/data", {
+      headers: commonHeaders,
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, error: error.response.data.message };
+  }
+}
 
 addButton.addEventListener("click", expenseHandler);
 
@@ -226,18 +257,18 @@ paginationContainer.addEventListener("click", async (event) => {
 });
 
 function createPaginationButtons(currentPage, totalPages) {
-  paginationContainer.innerHTML = ""; 
+  paginationContainer.innerHTML = "";
 
   const prevPageButton = document.createElement("button");
   prevPageButton.id = "prevPage";
   prevPageButton.classList.add("btn", "btn-primary", "page-link", "me-2");
   prevPageButton.textContent = "<";
-  
+
   paginationContainer.appendChild(prevPageButton);
 
   const pageText = document.createElement("span");
 
-  pageText.textContent = `${currentPage}/${totalPages}`;
+  pageText.textContent = `${currentPage} / ${totalPages}`;
   pageText.classList.add("page-text", "fs-4");
   paginationContainer.appendChild(pageText);
 
@@ -245,20 +276,20 @@ function createPaginationButtons(currentPage, totalPages) {
   nextPageButton.id = "nextPage";
   nextPageButton.classList.add("btn", "btn-primary", "page-link", "ms-2");
   nextPageButton.textContent = ">";
- 
+
   paginationContainer.appendChild(nextPageButton);
 
   const expensesPerPageSelect = document.createElement("select");
-  expensesPerPageSelect.classList.add("ms-2");
+  expensesPerPageSelect.classList.add("ms-2", "text-wrap");
   expensesPerPageSelect.id = "expensesPerPage";
   expensesPerPageSelect.innerHTML = `
-  <option value="">select expenses per page</option>
-     <option value="5">5 Expenses</option>
-     <option value="10">10 Expenses</option>
-     <option value="20">20 Expenses</option>
-     <option value="30">30 Expenses</option>
-     <option value="40">40 Expenses</option>
-   `;
+    <option value="">select expenses per page</option>
+       <option value="5">5 Expenses</option>
+       <option value="10">10 Expenses</option>
+       <option value="20">20 Expenses</option>
+       <option value="30">30 Expenses</option>
+       <option value="40">40 Expenses</option>
+     `;
   paginationContainer.appendChild(expensesPerPageSelect);
 
   togglePaginationButtons(currentPage, totalPages);
@@ -386,7 +417,7 @@ function showLeaderBoardToPremiumUsers() {
 
   const crownIcon = document.createElement("img");
 
-  crownIcon.src = "../src/assets/crown.png";
+  crownIcon.src = "/assets/crown.png";
   crownIcon.alt = "Crown Icon";
   crownIcon.width = 60;
   crownIcon.height = 60;
@@ -409,22 +440,6 @@ function showLeaderBoardToPremiumUsers() {
 
   let isLeaderboardVisible = false;
 
-  // Set header text
-  nameHeader.textContent = "Name";
-  expenseHeader.textContent = "Total Expense";
-
-  // Add a class to center the text in th elements
-  nameHeader.classList.add("text-center");
-  expenseHeader.classList.add("text-center");
-
-  // Append header cells to the header row
-  headerRow.appendChild(nameHeader);
-  headerRow.appendChild(expenseHeader);
-
-  // Append the header to the table
-  tableHead.appendChild(headerRow);
-  table.appendChild(tableHead);
-
   leaderboardButton.addEventListener("click", async () => {
     isLeaderboardVisible = !isLeaderboardVisible;
 
@@ -439,6 +454,21 @@ function showLeaderBoardToPremiumUsers() {
         const leaderboardData = leaderboardResponse.data;
 
         tableBody.innerHTML = "";
+        // Set header text
+        nameHeader.textContent = "Name";
+        expenseHeader.textContent = "Total Expense";
+
+        // Add a class to center the text in th elements
+        nameHeader.classList.add("text-center");
+        expenseHeader.classList.add("text-center");
+
+        // Append header cells to the header row
+        headerRow.appendChild(nameHeader);
+        headerRow.appendChild(expenseHeader);
+
+        // Append the header to the table
+        tableHead.appendChild(headerRow);
+        table.appendChild(tableHead);
 
         leaderboardData.forEach((user) => {
           const row = tableBody.insertRow();

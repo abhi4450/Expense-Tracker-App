@@ -6,8 +6,6 @@ const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#pass");
 const newDiv = document.querySelector("#msg");
 
-
-
 signupButton.addEventListener("click", userSignupHandler);
 
 async function userSignupHandler(event) {
@@ -58,4 +56,3 @@ async function storeUserToBackend(userData) {
     };
   }
 }
-

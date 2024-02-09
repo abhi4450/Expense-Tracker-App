@@ -3,7 +3,14 @@ const express = require("express");
 const app = express();
 
 const path = require("path");
-const rootDir = require("./util/path");
+
+const fs = require("fs");
+
+const helmet = require("helmet");
+
+const morgan = require("morgan");
+
+const compression = require("compression");
 
 const bodyParser = require("body-parser");
 
@@ -19,12 +26,33 @@ const Order = require("./models/Order");
 const DownloadedFile = require("./models/DownloadedFile");
 const ForgotPasswordRequest = require("./models/ForgotPasswordRequest");
 const sequelize = require("./util/database");
+const rootDir = require("./util/path");
 
-require("dotenv").config();
+const accessLogStream = fs.createWriteStream(path.join(rootDir, "access.log"), {
+  flags: "a",
+});
 
 app.use(cors());
+app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      scriptSrc: [
+        "'self'",
+        "https://checkout.razorpay.com",
+        "https://cdn.jsdelivr.net",
+      ],
+      frameSrc: ["'self'", "https://api.razorpay.com"],
+      imgSrc: ["'self'", "https://tse4.mm.bing.net", "data:"],
+    },
+  })
+);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+// Serve static files from the "public" directory
+app.use(express.static(path.join(rootDir, "../frontend", "public")));
 
 app.use("/premium", leaderboardRoutes);
 app.use("/purchase", purchaseRoutes);
@@ -52,7 +80,7 @@ DownloadedFile.belongsTo(User, {
 sequelize
   .sync()
   .then(() => {
-    app.listen(3000, (req, res) => {
+    app.listen(process.env.PORT || 3000, (req, res) => {
       console.log("server running on Port=3000");
     });
   })

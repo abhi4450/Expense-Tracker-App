@@ -1,0 +1,2 @@
+::1 - - [09/Feb/2024:09:41:11 +0000] "GET /api/user/loginPage HTTP/1.1" 304 - "http://localhost:3000/api/user/index" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+::1 - - [09/Feb/2024:09:41:11 +0000] "GET /login.js HTTP/1.1" 304 - "http://localhost:3000/api/user/loginPage" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"

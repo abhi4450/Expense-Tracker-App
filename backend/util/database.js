@@ -1,10 +1,15 @@
-
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize("expense_data", "root", "a1b9h9i1s", {
+
+// Retrieve database configuration from environment variables
+const database = process.env.DB_NAME;
+const username = process.env.DB_USER;
+const password = process.env.DB_PASS;
+const host = process.env.DB_HOST;
+
+// Initialize Sequelize with environment variables
+const sequelize = new Sequelize(database, username, password, {
   dialect: "mysql",
-  host: "localhost",
+  host: host,
 });
 
 module.exports = sequelize;
-
-

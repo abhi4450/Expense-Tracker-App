@@ -60,9 +60,16 @@ exports.getDownloadedFiles = async (req, res, next) => {
 };
 
 exports.getsignupForm = (req, res, next) => {
-  res.sendFile(path.join(rootDir, "../frontend", "public", "singup.html"));
+  res.sendFile(path.join(rootDir, "../frontend", "public", "signup.html"));
 };
 
+exports.getLoginPage = (req, res, next) => {
+  res.sendFile(path.join(rootDir, "../frontend", "public", "login.html"));
+};
+
+exports.getIndexPage = (req, res, next) => {
+  res.sendFile(path.join(rootDir, "../frontend", "public", "index.html"));
+};
 // Handler to get all expenses with pagination
 exports.getAllExpenses = async (req, res, next) => {
   try {
@@ -83,6 +90,21 @@ exports.getAllExpenses = async (req, res, next) => {
       .json({ expenses, totalItems, currentPage: page, totalPages });
   } catch (error) {
     console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getUsername = async (req, res) => {
+  try {
+    const { user } = req;
+    if (!user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    // Assuming user model has a 'name' field
+    const { name } = user;
+    res.status(200).json({ username: name });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
