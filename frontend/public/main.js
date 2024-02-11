@@ -26,7 +26,7 @@ const logoutButton = document.querySelector("#logoutButton");
 logoutButton.addEventListener("click", (event) => {
   localStorage.removeItem("token");
   localStorage.removeItem("ispremiumUser");
-  window.location.href = "http://localhost:3000/api/user/loginPage";
+  window.location.href = "http://65.2.80.132:3000/api/user/loginPage";
 });
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -81,7 +81,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 async function fetchUserData() {
   try {
-    const response = await axios.get("http://localhost:3000/api/user/data", {
+    const response = await axios.get("http://65.2.80.132:3000/api/user/data", {
       headers: commonHeaders,
     });
     return { success: true, data: response.data };
@@ -133,7 +133,7 @@ function updatePageInfo(currentPage, totalPages) {
 async function saveExpensesToBackend(expenseData) {
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/expense/addexpense",
+      "http://65.2.80.132:3000/api/expense/addexpense",
       expenseData,
       { headers: commonHeaders }
     );
@@ -150,7 +150,7 @@ async function saveExpensesToBackend(expenseData) {
 async function fetchExpenses(page, expensesPerPage) {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/expense/getExpenses?page=${page}&limit=${expensesPerPage}`,
+      `http://65.2.80.132:3000/api/expense/getExpenses?page=${page}&limit=${expensesPerPage}`,
       { headers: commonHeaders }
     );
     console.log("Fetched expenses:", response.data); // Add this line for debugging
@@ -222,7 +222,7 @@ async function displayExpenses(expenses) {
 async function deleteExpense(expenseId) {
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/expense/deleteExpense/${expenseId}`,
+      `http://65.2.80.132:3000/api/expense/deleteExpense/${expenseId}`,
       { headers: commonHeaders }
     );
     return { success: true, message: "Item deleted successfully" };
@@ -313,7 +313,7 @@ rzpButton.addEventListener("click", paymentHandler);
 async function paymentHandler(event) {
   try {
     const response = await axios.get(
-      "http://localhost:3000/purchase/premiummembership",
+      "http://65.2.80.132:3000/purchase/premiummembership",
       {
         headers: commonHeaders,
       }
@@ -327,7 +327,7 @@ async function paymentHandler(event) {
       handler: async function (response) {
         try {
           const updateResponse = await axios.post(
-            "http://localhost:3000/purchase/updatetransactionstatus",
+            "http://65.2.80.132:3000/purchase/updatetransactionstatus",
             {
               order_id: order.id,
               payment_id: response.razorpay_payment_id,
@@ -360,7 +360,7 @@ async function paymentHandler(event) {
       if (response.error.code === "BAD_REQUEST_ERROR") {
         try {
           const updateFailedResponse = await axios.post(
-            "http://localhost:3000/purchase/updatetransactionstatus",
+            "http://65.2.80.132:3000/purchase/updatetransactionstatus",
             {
               order_id: order.id,
               payment_id: response.razorpay_payment_id,
@@ -447,7 +447,7 @@ function showLeaderBoardToPremiumUsers() {
       // Make a GET request to fetch leaderboard data
       try {
         const leaderboardResponse = await axios.get(
-          "http://localhost:3000/premium/showleaderboard",
+          "http://65.2.80.132:3000/premium/showleaderboard",
           { headers: commonHeaders }
         );
 
@@ -494,9 +494,12 @@ function showLeaderBoardToPremiumUsers() {
 
 async function handleDownload() {
   try {
-    let response = await axios.get("http://localhost:3000/api/user/download", {
-      headers: commonHeaders,
-    });
+    let response = await axios.get(
+      "http://65.2.80.132:3000/api/user/download",
+      {
+        headers: commonHeaders,
+      }
+    );
     if (response.status === 200) {
       const { fileURL, filename } = response.data;
 
@@ -515,7 +518,7 @@ async function handleDownload() {
 async function displayDownloadedFiles() {
   try {
     let response = await axios.get(
-      "http://localhost:3000/api/user/downloadedFiles",
+      "http://65.2.80.132:3000/api/user/downloadedFiles",
       {
         headers: commonHeaders,
       }
