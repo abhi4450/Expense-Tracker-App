@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
           } else {
             localStorage.removeItem("ispremiumUser");
           }
-          window.location.href = "http://65.2.80.132:3000/api/user/index";
+          window.location.href = "http://15.207.84.7:3000/api/user/index";
         } else {
           console.warn("Unexpected status code:", result.status);
         }
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function checkForUserInBackend(loginUserData) {
     try {
       const response = await axios.post(
-        "http://65.2.80.132:3000/api/user/login",
+        "http://15.207.84.7:3000/api/user/login",
         loginUserData
       );
 
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
         const response = await axios.post(
-          "http://65.2.80.132:3000/api/password/forgotpassword",
+          "http://15.207.84.7:3000/api/password/forgotpassword",
           {
             email: forgotEmail,
           }

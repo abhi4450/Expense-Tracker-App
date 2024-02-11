@@ -168,7 +168,7 @@ exports.handleForgotPassword = async (req, res, next) => {
     const requestId = generateUUID();
 
     // Build the reset link with the requestId
-    const resetLink = `http://65.2.80.132:3000/api/password/resetpassword/${requestId}`;
+    const resetLink = `http://15.207.84.7:3000/api/password/resetpassword/${requestId}`;
 
     // Save the reset request to the ForgotPasswordRequests table
 
@@ -226,7 +226,7 @@ exports.handleresetPassword = async (req, res, next) => {
     }
 
     res.send(`
-    <form action="http://65.2.80.132:3000/api/password/updatepassword/${requestId}" method="POST">
+    <form action="http://15.207.84.7:3000/api/password/updatepassword/${requestId}" method="POST">
       <label for="password">Enter a new password:</label>
       <input type="password" name="password" required>
       <button type="submit">update password</button>

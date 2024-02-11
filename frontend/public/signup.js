@@ -44,7 +44,7 @@ async function userSignupHandler(event) {
 async function storeUserToBackend(userData) {
   try {
     const response = await axios.post(
-      "http://65.2.80.132:3000/api/user/signup",
+      "http://15.207.84.7:3000/api/user/signup",
       userData
     );
     return { success: true, data: response.data, status: response.status };
