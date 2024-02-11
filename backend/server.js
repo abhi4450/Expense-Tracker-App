@@ -16,6 +16,8 @@ const bodyParser = require("body-parser");
 
 const cors = require("cors");
 
+require("dotenv").config();
+
 const leaderboardRoutes = require("./routes/leaderboard");
 const purchaseRoutes = require("./routes/purchase");
 const userRoutes = require("./routes/users");
@@ -80,7 +82,7 @@ DownloadedFile.belongsTo(User, {
 sequelize
   .sync()
   .then(() => {
-    app.listen(process.env.PORT || 3000, (req, res) => {
+    app.listen(3000, (req, res) => {
       console.log("server running on Port=3000");
     });
   })
