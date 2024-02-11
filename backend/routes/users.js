@@ -6,8 +6,8 @@ const router = express.Router();
 const userController = require("../controllers/users");
 
 router.get("/users", userController.getsignupForm);
-router.get('/user/loginPage', userController.getLoginPage)
-router.get('/user/index',userController.getIndexPage)
+router.get("/user/loginPage", userController.getLoginPage);
+router.get("/user/index", userController.getIndexPage);
 router.get(
   "/expense/getExpenses",
   userAuth.authenticate,
