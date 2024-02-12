@@ -83,7 +83,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 async function fetchUserData() {
   try {
-    const response = await axios.get("http://localhost:3000/api/user/data", {
+    const response = await axios.get("15.206.170.155:8080/api/user/data", {
       headers: commonHeaders,
     });
     return { success: true, data: response.data };
@@ -135,7 +135,7 @@ function updatePageInfo(currentPage, totalPages) {
 async function saveExpensesToBackend(expenseData) {
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/expense/addexpense",
+      "15.206.170.155:8080/api/expense/addexpense",
       expenseData,
       { headers: commonHeaders }
     );
@@ -152,7 +152,7 @@ async function saveExpensesToBackend(expenseData) {
 async function fetchExpenses(page, expensesPerPage) {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/expense/getExpenses?page=${page}&limit=${expensesPerPage}`,
+      `15.206.170.155:8080/api/expense/getExpenses?page=${page}&limit=${expensesPerPage}`,
       { headers: commonHeaders }
     );
     console.log("Fetched expenses:", response.data); // Add this line for debugging
@@ -224,7 +224,7 @@ async function displayExpenses(expenses) {
 async function deleteExpense(expenseId) {
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/expense/deleteExpense/${expenseId}`,
+      `15.206.170.155:8080/api/expense/deleteExpense/${expenseId}`,
       { headers: commonHeaders }
     );
     return { success: true, message: "Item deleted successfully" };
@@ -315,7 +315,7 @@ rzpButton.addEventListener("click", paymentHandler);
 async function paymentHandler(event) {
   try {
     const response = await axios.get(
-      "http://localhost:3000/purchase/premiummembership",
+      "15.206.170.155:8080/purchase/premiummembership",
       {
         headers: commonHeaders,
       }
@@ -329,7 +329,7 @@ async function paymentHandler(event) {
       handler: async function (response) {
         try {
           const updateResponse = await axios.post(
-            "http://localhost:3000/purchase/updatetransactionstatus",
+            "15.206.170.155:8080/purchase/updatetransactionstatus",
             {
               order_id: order.id,
               payment_id: response.razorpay_payment_id,
@@ -362,7 +362,7 @@ async function paymentHandler(event) {
       if (response.error.code === "BAD_REQUEST_ERROR") {
         try {
           const updateFailedResponse = await axios.post(
-            "http://localhost:3000/purchase/updatetransactionstatus",
+            "15.206.170.155:8080/purchase/updatetransactionstatus",
             {
               order_id: order.id,
               payment_id: response.razorpay_payment_id,
@@ -449,7 +449,7 @@ function showLeaderBoardToPremiumUsers() {
       // Make a GET request to fetch leaderboard data
       try {
         const leaderboardResponse = await axios.get(
-          "http://localhost:3000/premium/showleaderboard",
+          "15.206.170.155:8080/premium/showleaderboard",
           { headers: commonHeaders }
         );
 
@@ -496,7 +496,7 @@ function showLeaderBoardToPremiumUsers() {
 
 async function handleDownload() {
   try {
-    let response = await axios.get("http://localhost:3000/api/user/download", {
+    let response = await axios.get("15.206.170.155:8080/api/user/download", {
       headers: commonHeaders,
     });
     if (response.status === 200) {
@@ -517,7 +517,7 @@ async function handleDownload() {
 async function displayDownloadedFiles() {
   try {
     let response = await axios.get(
-      "http://localhost:3000/api/user/downloadedFiles",
+      "15.206.170.155:8080/api/user/downloadedFiles",
       {
         headers: commonHeaders,
       }

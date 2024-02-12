@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function checkForUserInBackend(loginUserData) {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/login",
+        "15.206.170.155:8080/api/user/login",
         loginUserData
       );
 
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/password/forgotpassword",
+          "15.206.170.155:8080/api/password/forgotpassword",
           {
             email: forgotEmail,
           }
