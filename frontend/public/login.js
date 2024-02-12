@@ -50,10 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function checkForUserInBackend(loginUserData) {
     try {
-      const response = await axios.post(
-        "15.206.170.155:8080/api/user/login",
-        loginUserData
-      );
+      const response = await axios.post("/api/user/login", loginUserData);
 
       return { success: true, data: response.data, status: response.status };
     } catch (error) {
@@ -71,12 +68,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const forgotEmail = document.getElementById("forgotEmail").value;
 
       try {
-        const response = await axios.post(
-          "15.206.170.155:8080/api/password/forgotpassword",
-          {
-            email: forgotEmail,
-          }
-        );
+        const response = await axios.post("/api/password/forgotpassword", {
+          email: forgotEmail,
+        });
 
         // Handle the response from the backend API as needed
         alert(response.data.message);

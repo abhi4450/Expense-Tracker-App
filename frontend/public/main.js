@@ -83,7 +83,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 async function fetchUserData() {
   try {
-    const response = await axios.get("15.206.170.155:8080/api/user/data", {
+    const response = await axios.get("/api/user/data", {
       headers: commonHeaders,
     });
     return { success: true, data: response.data };
@@ -134,11 +134,9 @@ function updatePageInfo(currentPage, totalPages) {
 
 async function saveExpensesToBackend(expenseData) {
   try {
-    const response = await axios.post(
-      "15.206.170.155:8080/api/expense/addexpense",
-      expenseData,
-      { headers: commonHeaders }
-    );
+    const response = await axios.post("/api/expense/addexpense", expenseData, {
+      headers: commonHeaders,
+    });
     return { success: true, data: response.data, status: response.status };
   } catch (error) {
     return {
@@ -152,7 +150,7 @@ async function saveExpensesToBackend(expenseData) {
 async function fetchExpenses(page, expensesPerPage) {
   try {
     const response = await axios.get(
-      `15.206.170.155:8080/api/expense/getExpenses?page=${page}&limit=${expensesPerPage}`,
+      `/api/expense/getExpenses?page=${page}&limit=${expensesPerPage}`,
       { headers: commonHeaders }
     );
     console.log("Fetched expenses:", response.data); // Add this line for debugging
@@ -224,7 +222,7 @@ async function displayExpenses(expenses) {
 async function deleteExpense(expenseId) {
   try {
     const response = await axios.delete(
-      `15.206.170.155:8080/api/expense/deleteExpense/${expenseId}`,
+      `/api/expense/deleteExpense/${expenseId}`,
       { headers: commonHeaders }
     );
     return { success: true, message: "Item deleted successfully" };
@@ -314,12 +312,9 @@ rzpButton.addEventListener("click", paymentHandler);
 
 async function paymentHandler(event) {
   try {
-    const response = await axios.get(
-      "15.206.170.155:8080/purchase/premiummembership",
-      {
-        headers: commonHeaders,
-      }
-    );
+    const response = await axios.get("/purchase/premiummembership", {
+      headers: commonHeaders,
+    });
 
     const { key_id, order } = response.data;
 
@@ -329,7 +324,7 @@ async function paymentHandler(event) {
       handler: async function (response) {
         try {
           const updateResponse = await axios.post(
-            "15.206.170.155:8080/purchase/updatetransactionstatus",
+            "/purchase/updatetransactionstatus",
             {
               order_id: order.id,
               payment_id: response.razorpay_payment_id,
@@ -362,7 +357,7 @@ async function paymentHandler(event) {
       if (response.error.code === "BAD_REQUEST_ERROR") {
         try {
           const updateFailedResponse = await axios.post(
-            "15.206.170.155:8080/purchase/updatetransactionstatus",
+            "/purchase/updatetransactionstatus",
             {
               order_id: order.id,
               payment_id: response.razorpay_payment_id,
@@ -449,7 +444,7 @@ function showLeaderBoardToPremiumUsers() {
       // Make a GET request to fetch leaderboard data
       try {
         const leaderboardResponse = await axios.get(
-          "15.206.170.155:8080/premium/showleaderboard",
+          "/premium/showleaderboard",
           { headers: commonHeaders }
         );
 
@@ -496,7 +491,7 @@ function showLeaderBoardToPremiumUsers() {
 
 async function handleDownload() {
   try {
-    let response = await axios.get("15.206.170.155:8080/api/user/download", {
+    let response = await axios.get("/api/user/download", {
       headers: commonHeaders,
     });
     if (response.status === 200) {
@@ -516,12 +511,9 @@ async function handleDownload() {
 
 async function displayDownloadedFiles() {
   try {
-    let response = await axios.get(
-      "15.206.170.155:8080/api/user/downloadedFiles",
-      {
-        headers: commonHeaders,
-      }
-    );
+    let response = await axios.get("/api/user/downloadedFiles", {
+      headers: commonHeaders,
+    });
     if (response.status === 200) {
       const files = response.data.Allfiles;
       const list = document.querySelector("#downloaedFileList");
