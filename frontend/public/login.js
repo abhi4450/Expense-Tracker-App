@@ -24,12 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result.status === 200) {
           localStorage.setItem("token", result.data.token);
           alert(result.data.message);
+
           if (result.data.ispremium) {
             localStorage.setItem("ispremiumUser", result.data.ispremium);
           } else {
             localStorage.removeItem("ispremiumUser");
           }
-          window.location.href = "15.206.170.155:3000/api/user/index";
+          window.location.href = "/api/user/index";
         } else {
           console.warn("Unexpected status code:", result.status);
         }
@@ -50,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function checkForUserInBackend(loginUserData) {
     try {
       const response = await axios.post(
-        "15.206.170.155:3000/api/user/login",
+        "http://localhost:3000/api/user/login",
         loginUserData
       );
 
@@ -71,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
         const response = await axios.post(
-          "15.206.170.155:3000/api/password/forgotpassword",
+          "http://localhost:3000/api/password/forgotpassword",
           {
             email: forgotEmail,
           }

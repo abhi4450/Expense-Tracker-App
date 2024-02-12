@@ -66,6 +66,10 @@ exports.getsignupForm = (req, res, next) => {
 exports.getLoginPage = (req, res, next) => {
   res.sendFile(path.join(rootDir, "../frontend", "public", "login.html"));
 };
+// exports.getIndexPage = (req, res, next) => {
+//   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+//   res.sendFile(path.join(rootDir, "../frontend", "public", "index.html"));
+// };
 
 exports.getIndexPage = (req, res, next) => {
   res.sendFile(path.join(rootDir, "../frontend", "public", "index.html"));
