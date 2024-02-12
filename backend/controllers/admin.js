@@ -112,7 +112,7 @@ exports.postExpenseForm = async (req, res, next) => {
 
 exports.deleteExpenseItem = async (req, res, next) => {
   const expenseId = req.params.expenseId;
-  const t = await sequelize.transaction(); // Assuming sequelize is your ORM instance
+  const t = await sequelize.transaction();
 
   try {
     const expenseItem = await req.user.getExpenses({
@@ -168,7 +168,7 @@ exports.handleForgotPassword = async (req, res, next) => {
     const requestId = generateUUID();
 
     // Build the reset link with the requestId
-    const resetLink = `http://15.207.84.7:3000/api/password/resetpassword/${requestId}`;
+    const resetLink = `15.206.170.155:3000/api/password/resetpassword/${requestId}`;
 
     // Save the reset request to the ForgotPasswordRequests table
 
@@ -226,7 +226,7 @@ exports.handleresetPassword = async (req, res, next) => {
     }
 
     res.send(`
-    <form action="http://15.207.84.7:3000/api/password/updatepassword/${requestId}" method="POST">
+    <form action="15.206.170.155:3000/api/password/updatepassword/${requestId}" method="POST">
       <label for="password">Enter a new password:</label>
       <input type="password" name="password" required>
       <button type="submit">update password</button>
