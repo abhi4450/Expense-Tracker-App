@@ -1,6 +1,6 @@
 const Razorpay = require("razorpay");
 const Order = require("../models/Order");
-const User = require("../models/User"); // Import the User model
+const User = require("../models/User"); 
 
 exports.purchasepremium = async (req, res) => {
   try {
